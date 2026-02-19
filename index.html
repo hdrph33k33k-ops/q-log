@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Q-Log: Vital Response (ULTIMATE)</title>
     <style>
         /* =========================================
@@ -21,14 +21,30 @@
         body {
             margin: 0; padding: 0;
             background-color: #000;
+            /* ▼▼▼ 修正：ファイル名を.pngに変更 ▼▼▼ */
             background-image: url('assets/panel_bg.png'); 
-            background-position: center;
+            background-position: center center;
+            /* 基本はカバー（画面いっぱいに広げる） */
             background-size: cover;
             background-repeat: no-repeat;
+            background-attachment: fixed; /* 背景を固定して安定させる */
             color: var(--text-main);
             font-family: 'Courier New', monospace;
             overflow: hidden; height: 100vh;
+            /* スマホでのタップ遅延対策 */
+            touch-action: manipulation;
         }
+
+        /* ▼▼▼ 追加：スマホ（縦長画面）用の背景調整 ▼▼▼ */
+        @media screen and (max-aspect-ratio: 1/1) {
+            body {
+                /* スマホの時は、画像全体が収まるようにサイズを調整 */
+                background-size: contain;
+                /* 上下に黒い隙間ができるので、位置を少し上に調整してもいいかも（お好みで） */
+                /* background-position: center 10%; */ 
+            }
+        }
+        /* ▲▲▲ 追加ここまで ▲▲▲ */
 
         /* 背景動画 */
         #video-bg {
@@ -81,8 +97,12 @@
         .time-limit-container { width: 100%; height: 6px; background: #222; border-bottom: 1px solid #555; }
         #time-limit-bar { height: 100%; background: var(--accent-green); width: 100%; transition: width 0.1s linear; box-shadow: 0 0 10px var(--accent-green); }
 
-        /* 問題表示エリア */
-        .content-wrapper { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
+        /* 問題表示エリア（スマホ対応強化） */
+        .content-wrapper { 
+            flex: 1; overflow-y: auto; padding: 20px; position: relative;
+            /* スマホでのスクロールを滑らかに */
+            -webkit-overflow-scrolling: touch; 
+        }
         
         .question-box {
             background: rgba(0, 30, 60, 0.75); 
@@ -94,7 +114,7 @@
         .q-category { position: absolute; top: -10px; left: 10px; background: var(--accent-blue); color: black; padding: 2px 8px; font-size: 12px; font-weight: bold; border-radius: 2px; }
         .q-counter { position: absolute; top: -10px; right: 10px; background: #333; color: #aaa; padding: 2px 8px; font-size: 12px; border: 1px solid #555; }
 
-        /* 選択肢ボタン */
+        /* 選択肢ボタン（スマホ対応強化） */
         #cyber-options-grid {
             display: flex; flex-direction: column; gap: 15px; padding-bottom: 50px;
             width: 100%; min-height: 200px; z-index: 100; position: relative;
@@ -107,6 +127,8 @@
             color: white; padding: 20px; text-align: left; font-size: 18px;
             cursor: pointer; transition: all 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5);
             opacity: 1; visibility: visible;
+            /* スマホでのタップ感を向上 */
+            min-height: 60px; display: flex; align-items: center;
         }
         .cyber-btn:hover {
             background: rgba(0, 100, 255, 0.3); transform: translateX(10px);
@@ -123,7 +145,7 @@
             display: flex; flex-direction: column;
             backdrop-filter: blur(5px);
         }
-        .feedback-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .feedback-content { flex: 1; padding: 30px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         .feedback-header { padding: 20px; text-align: center; border-bottom: 1px solid #444; }
         .body-trivia, .reference-box { background: rgba(255,255,255,0.08); border-left: 4px solid var(--accent-amber); padding: 20px; margin-bottom: 20px; color: #eee; font-size: 16px; line-height: 1.6; }
         .reference-box { border-left-color: var(--accent-blue); font-style: italic; }
@@ -131,19 +153,29 @@
             padding: 20px; width: 100%; background: var(--accent-green); 
             font-size: 20px; font-weight: bold; border: none; cursor: pointer; color: black;
             letter-spacing: 2px;
+            /* スマホでのタップ感を向上 */
+            min-height: 60px;
         }
         #btn-next:hover { background: white; }
 
-        /* メニュー画面スタイル */
-        .panel { background: rgba(10, 20, 30, 0.7); backdrop-filter: blur(5px); border: 1px solid var(--accent-blue); padding: 40px; border-radius: 4px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0, 204, 255, 0.1); }
+        /* メニュー画面スタイル（スマホ対応強化） */
+        .panel { 
+            background: rgba(10, 20, 30, 0.7); backdrop-filter: blur(5px); 
+            border: 1px solid var(--accent-blue); padding: 30px 20px; /* スマホ向けにパディング調整 */
+            border-radius: 4px; width: 95%; max-width: 400px; text-align: center; 
+            box-shadow: 0 0 30px rgba(0, 204, 255, 0.1); 
+            box-sizing: border-box;
+        }
         
-        .menu-container { width: 90%; max-width: 500px; text-align: center; }
+        .menu-container { width: 95%; max-width: 500px; text-align: center; }
         
         .menu-btn { 
             width: 100%; padding: 20px; margin-bottom: 15px; 
             background: rgba(0,0,0,0.7); border: 1px solid #555; color: white; 
             cursor: pointer; display: flex; justify-content: space-between; align-items: center; 
             box-sizing: border-box; transition: 0.2s;
+            /* スマホでのタップ感を向上 */
+            min-height: 70px;
         }
         .menu-btn:hover { background: rgba(255,255,255,0.1); border-color: white; }
         
@@ -152,29 +184,30 @@
         .genre-btn { border-left: 4px solid var(--accent-amber); }
         .course-btn { border-left: 4px solid var(--accent-green); justify-content: center; }
         
-        .back-btn { background: none; border: none; color: #888; padding: 15px; cursor: pointer; margin-top: 10px; width: 100%; transition: color 0.2s; }
+        .back-btn { background: none; border: none; color: #888; padding: 15px; cursor: pointer; margin-top: 10px; width: 100%; transition: color 0.2s; min-height: 50px; }
         .back-btn:hover { color: white; }
         
         /* ログアウトボタン専用スタイル */
         .logout-btn {
             background: rgba(255, 0, 0, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red); 
             padding: 15px; cursor: pointer; margin-top: 30px; width: 100%; font-weight: bold; letter-spacing: 2px; transition: 0.2s;
+            min-height: 60px;
         }
         .logout-btn:hover { background: var(--accent-red); color: black; box-shadow: 0 0 15px rgba(255,51,51,0.5); }
 
-        .abort-btn { position: absolute; top: 15px; left: 15px; background: rgba(200,0,0,0.2); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 5px 15px; cursor: pointer; z-index: 300; font-size: 12px; }
+        .abort-btn { position: absolute; top: 15px; left: 15px; background: rgba(200,0,0,0.2); border: 1px solid var(--accent-red); color: var(--accent-red); padding: 10px 15px; cursor: pointer; z-index: 300; font-size: 12px; border-radius: 4px;}
         .abort-btn:hover { background: var(--accent-red); color: black; }
         
         /* リザルト */
-        .result-box { background: rgba(0,0,0,0.6); padding: 40px; border: 2px solid var(--accent-green); margin-bottom: 30px; text-align: center; }
-        .result-rank { font-size: 100px; color: var(--accent-green); font-weight: bold; margin: 0; line-height: 1; text-shadow: 0 0 30px var(--accent-green); }
-        .result-score { font-size: 24px; margin: 20px 0; border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 10px 0; }
+        .result-box { background: rgba(0,0,0,0.6); padding: 30px 20px; border: 2px solid var(--accent-green); margin-bottom: 30px; text-align: center; }
+        .result-rank { font-size: 80px; color: var(--accent-green); font-weight: bold; margin: 0; line-height: 1; text-shadow: 0 0 30px var(--accent-green); }
+        .result-score { font-size: 20px; margin: 20px 0; border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 10px 0; }
         
-        .btn-action { width: 100%; padding: 15px; background: var(--accent-green); font-weight: bold; font-size: 18px; border: none; cursor: pointer; color: black; box-shadow: 0 0 15px rgba(0,255,100,0.3); }
-        .input-field { width: 100%; padding: 15px; background: #000; border: 1px solid #555; color: white; text-align: center; font-size: 18px; margin: 20px 0; box-sizing: border-box; }
+        .btn-action { width: 100%; padding: 15px; background: var(--accent-green); font-weight: bold; font-size: 18px; border: none; cursor: pointer; color: black; box-shadow: 0 0 15px rgba(0,255,100,0.3); min-height: 60px; }
+        .input-field { width: 100%; padding: 15px; background: #000; border: 1px solid #555; color: white; text-align: center; font-size: 18px; margin: 20px 0; box-sizing: border-box; min-height: 50px; }
 
         /* 習熟度グラフのスタイル */
-        .stats-container { width: 100%; max-height: 300px; overflow-y: auto; text-align: left; margin-top: 20px; padding-right: 5px; }
+        .stats-container { width: 100%; max-height: 300px; overflow-y: auto; text-align: left; margin-top: 20px; padding-right: 5px; -webkit-overflow-scrolling: touch; }
         .stat-item { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .stat-header { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 3px; }
         .progress-bg { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
@@ -187,8 +220,8 @@
     <div class="video-overlay"></div>
 
     <div id="screen-opening" class="screen">
-        <h1 class="text-outline" style="font-size: 4rem; margin: 0;">Q-Log</h1>
-        <p class="text-outline" style="letter-spacing: 5px; color: var(--accent-green);">VITAL RESPONSE SYSTEM</p>
+        <h1 class="text-outline" style="font-size: 3rem; margin: 0;">Q-Log</h1>
+        <p class="text-outline" style="letter-spacing: 3px; color: var(--accent-green); font-size: 1rem;">VITAL RESPONSE SYSTEM</p>
         <div id="boot-logs" style="margin-top: 20px; color: var(--accent-green); font-size: 12px; min-height: 20px;"></div>
     </div>
 
@@ -207,7 +240,7 @@
                 <span id="display-operator-id" style="color: var(--accent-green); font-weight: bold; font-size: 16px; letter-spacing: 1px;">----</span>
             </div>
 
-            <h2 class="text-outline" style="border-bottom: 2px solid #444; padding-bottom: 10px; margin-bottom: 30px;">MAIN MENU</h2>
+            <h2 class="text-outline" style="border-bottom: 2px solid #444; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem;">MAIN MENU</h2>
             <button class="menu-btn profile-btn" onclick="showProfile()">
                 <div><span style="font-weight:bold;">RANK: <span id="menu-rank-display">ROOKIE</span></span><br><span style="font-size:12px; color:#888;">CHECK STATUS</span></div>
                 <div style="font-size: 24px;">👕</div>
@@ -216,7 +249,7 @@
                 <div><span style="font-weight:bold;">REVIEW MODE</span><br><span style="font-size:12px; color:#888;">WEAKNESS LOG</span></div>
                 <div style="font-size: 24px;">⚠️</div>
             </button>
-            <h3 class="text-outline" style="margin-top: 40px; color: #aaa;">SELECT TRAINING</h3>
+            <h3 class="text-outline" style="margin-top: 30px; color: #aaa; font-size: 1.2rem;">SELECT TRAINING</h3>
             <button class="menu-btn genre-btn" onclick="selectGenre('anatomy')"><div>解剖生理 (BODY)</div></button>
             <button class="menu-btn genre-btn" onclick="selectGenre('simulation')"><div>図上訓練 (SIM)</div></button>
 
@@ -374,6 +407,9 @@
 
         // 起動処理
         window.onload = function() {
+            // スマホでのダブルタップ拡大を防止
+            document.addEventListener('dblclick', function(e){ e.preventDefault(); }, { passive: false });
+
             console.log("System Ready.");
             if(typeof questionData === 'undefined') {
                 alert("【重要】questions.js が見つかりません。");
@@ -411,6 +447,8 @@
                 setTimeout(()=>target.style.opacity=1, 10);
             }
             clearInterval(timerInterval);
+            // 画面切り替え時にスクロールをリセット
+            window.scrollTo(0, 0);
         }
 
         function handleLogin() {
@@ -428,7 +466,6 @@
             if(getEl('profile-rank-display')) getEl('profile-rank-display').innerText = userProfile.rank || "ROOKIE";
             if(getEl('profile-exp')) getEl('profile-exp').innerText = userProfile.rankExp;
             
-            // 🌟変更点：メニュー画面にオペレーターIDを表示
             if(getEl('display-operator-id')) getEl('display-operator-id').innerText = userProfile.id;
         }
 
@@ -508,7 +545,6 @@
         window.selectSubGenre = (s) => { currentSubGenre = s; playSound('select'); switchScreen('course'); };
         window.selectCourse = (c) => { targetQuestionCount = c; playSound('select'); startGame(); };
         
-        // 🌟変更点：ログアウト時に確認メッセージを出すように変更
         window.logout = () => { 
             if(confirm("システムからログアウトしますか？")) {
                 localStorage.removeItem('qlog_user'); 
@@ -644,5 +680,4 @@
         }, 2000); 
     </script>
 </body>
-
 </html>
