@@ -551,9 +551,9 @@
                 location.reload(); 
             }
         };
-
         function startGame() {
-            let pool = questionData.filter(q => q.level === currentLevel && q.category === currentGenre && q.subCategory === currentSubGenre);
+            // Number()を使って、データが文字でも数字でも強制的に数字に揃えて比較するように修正！
+            let pool = questionData.filter(q => Number(q.level) === Number(currentLevel) && q.category === currentGenre && q.subCategory === currentSubGenre);
             if(!pool.length) return alert("該当する問題データがありません。");
             
             pool.sort(() => Math.random() - 0.5);
@@ -562,6 +562,7 @@
             switchScreen('game');
             loadQuestion();
         }
+
 
         function startReviewMode() {
             if(!userProfile.weaknessList.length) return alert("復習する問題はありません");
